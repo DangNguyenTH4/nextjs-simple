@@ -4,11 +4,11 @@ import styles from '@/styles/Home.module.css'
 import useSWR from 'swr'
 const inter = Inter({ subsets: ['latin'] })
 
-const fetcher = (...args) => fetch(...args).then((res) => res.json())
+const fetcher = (args : any) => fetch(args).then((res) => res.json())
 
 export default function Home() {
   console.log("api call")
-  const { data, error } = useSWR('http://localhost:8080/account', fetcher)
+  const { data, error } = useSWR('https://java-service.containeverse.com/account', fetcher)
   if(error){
     console.log("ERROR")
     console.log(error)
