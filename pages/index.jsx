@@ -2,7 +2,9 @@ import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import useSWR from "swr";
-import { Avatar, Card, CardHeader } from "@mui/material";
+import { Avatar, Card, CardHeader, Switch } from "@mui/material";
+import { Box, margin } from "@mui/system";
+import { useState } from "react";
 const inter = Inter({ subsets: ["latin"] });
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
@@ -16,7 +18,7 @@ function stringToColor(string) {
     hash = string.charCodeAt(i) + ((hash << 5) - hash);
   }
 
-  let color = '#';
+  let color = "#";
 
   for (i = 0; i < 3; i += 1) {
     const value = (hash >> (i * 8)) & 0xff;
@@ -32,91 +34,96 @@ function stringAvatar(name) {
     sx: {
       bgcolor: stringToColor(name),
     },
-    children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
   };
 }
 
-export default function Home() {
-  console.log("api call");
-  const mock = [
-    {
-      name: "Cohn Doe ",
-      address: "1 Bach Mai , Hai Ba Trung",
-      cityId: 1,
-      city: {
-        id: 1,
-        name: "Ha Noi",
-        code: "HANOI",
-        zipcode: "100000",
-        gpsCoordinates: "21.0278° N, 105.8342° E",
-      },
+const mock = [
+  {
+    name: "Cohn Doe ",
+    address: "1 Bach Mai , Hai Ba Trung",
+    cityId: 1,
+    city: {
+      id: 1,
+      name: "Ha Noi",
+      code: "HANOI",
+      zipcode: "100000",
+      gpsCoordinates: "21.0278° N, 105.8342° E",
     },
-    {
-      name: "Aane Doe",
-      address: "2 Duy Tan, Cau Giay",
-      cityId: 1,
-      city: {
-        id: 1,
-        name: "Ha Noi",
-        code: "HANOI",
-        zipcode: "100000",
-        gpsCoordinates: "21.0278° N, 105.8342° E",
-      },
+  },
+  {
+    name: "Aane Doe",
+    address: "2 Duy Tan, Cau Giay",
+    cityId: 1,
+    city: {
+      id: 1,
+      name: "Ha Noi",
+      code: "HANOI",
+      zipcode: "100000",
+      gpsCoordinates: "21.0278° N, 105.8342° E",
     },
-    {
-      name: "Jane Doo",
-      address: "3 My Dinh, Nam Tu Liem",
-      cityId: 1,
-      city: {
-        id: 1,
-        name: "Ha Noi",
-        code: "HANOI",
-        zipcode: "100000",
-        gpsCoordinates: "21.0278° N, 105.8342° E",
-      },
+  },
+  {
+    name: "Jane Doo",
+    address: "3 My Dinh, Nam Tu Liem",
+    cityId: 1,
+    city: {
+      id: 1,
+      name: "Ha Noi",
+      code: "HANOI",
+      zipcode: "100000",
+      gpsCoordinates: "21.0278° N, 105.8342° E",
     },
-    {
-      name: "Fohn Doo",
-      address: "1 Phan Huy Thong, Tan Son Nhat",
-      cityId: 2,
-      city: {
-        id: 2,
-        name: "Ho Chi Minh",
-        code: "HOCHIMINH",
-        zipcode: "200000",
-        gpsCoordinates: "10.8231° N, 106.6297° E",
-      },
+  },
+  {
+    name: "Fohn Doo",
+    address: "1 Phan Huy Thong, Tan Son Nhat",
+    cityId: 2,
+    city: {
+      id: 2,
+      name: "Ho Chi Minh",
+      code: "HOCHIMINH",
+      zipcode: "200000",
+      gpsCoordinates: "10.8231° N, 106.6297° E",
     },
-    {
-      name: "Baby Doe",
-      address: "2 Nguyen Hue, Go Vap",
-      cityId: 2,
-      city: {
-        id: 2,
-        name: "Ho Chi Minh",
-        code: "HOCHIMINH",
-        zipcode: "200000",
-        gpsCoordinates: "10.8231° N, 106.6297° E",
-      },
+  },
+  {
+    name: "Baby Doe",
+    address: "2 Nguyen Hue, Go Vap",
+    cityId: 2,
+    city: {
+      id: 2,
+      name: "Ho Chi Minh",
+      code: "HOCHIMINH",
+      zipcode: "200000",
+      gpsCoordinates: "10.8231° N, 106.6297° E",
     },
-    {
-      name: "Nanie Doe",
-      address: "3 Nguyen Thi Thap, Binh Tan",
-      cityId: 3,
-      city: null,
-    },
-  ];
+  },
+  {
+    name: "Nanie Doe",
+    address: "3 Nguyen Thi Thap, Binh Tan",
+    cityId: 3,
+    city: null,
+  },
+];
 
-  const { data, error } = useSWR("https://java-service.containeverse.com/account", fetcher);
+export default function Home() {
+  const [isDetail, setIsDetail] = useState(false);
+
+  const acc = useSWR(
+    "https://java-service.containeverse.com/account",
+    fetcher
+  );
+
+  const detail = useSWR(
+    "https://java-service.containeverse.com/account?detail=true",
+    fetcher
+  );
+
+  const display = isDetail ? detail.data?? [] : acc.data ?? [];
+
   //http://localhost:8080/account?detail=true
-  if (error) {
-    console.log("ERROR");
-    console.log(error);
-  }
-  if (data) {
-    console.log("got data");
-    console.log(data);
-  }
+
   return (
     <>
       <Head>
@@ -126,18 +133,36 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        {
-          mock.map(user => {
+        <Switch
+          onChange={(event) => {
+            setIsDetail(event.target.checked);
+          }}
+        />
 
-            return <Card>
-              <CardHeader
-                avatar={<Avatar {...stringAvatar(user.name)}/>}
-                title={user.name}
-                subheader={user.address}
-              />
-            </Card>
-          })
-        }
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "1rem",
+            width: "60%",
+            border: "1px dashed gray",
+            borderRadius: "10px",
+            padding: "2rem",
+            margin: "2rem",
+          }}
+        >
+          {display.map((user) => {
+            return (
+              <Card>
+                <CardHeader
+                  avatar={<Avatar {...stringAvatar(user.name)} />}
+                  title={user.name}
+                  subheader={user.address}
+                />
+              </Card>
+            );
+          })}
+        </Box>
       </main>
     </>
   );
