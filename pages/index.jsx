@@ -107,7 +107,7 @@ export default function Home() {
     },
   ];
 
-  const { data, error } = useSWR("http://localhost:8080/account", fetcher);
+  const { data, error } = useSWR("https://java-service.containeverse.com/account", fetcher);
   //http://localhost:8080/account?detail=true
   if (error) {
     console.log("ERROR");
